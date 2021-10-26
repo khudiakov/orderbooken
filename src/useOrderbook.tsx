@@ -1,24 +1,6 @@
 import * as React from "react";
 
-import { TEntry, useCryptofacilitiesApi } from "./useCryptofacilitiesApi";
-
-type TOrderbookState = { [price: string]: number };
-
-interface IOrderbookOffers {
-  total: number;
-  offers: Array<{
-    total: number;
-    price: number;
-    size: number;
-  }>;
-}
-
-export interface IOrderbook {
-  spread: number;
-  spreadPercentage: number;
-  asks: IOrderbookOffers;
-  bids: IOrderbookOffers;
-}
+import { useCryptofacilitiesApi } from "./useCryptofacilitiesApi";
 
 const EMPTY_RESULT: IOrderbook = {
   spread: 0,
@@ -46,9 +28,13 @@ const applyStateUpdate = (update: TEntry[], state: TOrderbookState) =>
     { ...state }
   );
 
-const stateToOrderbookResult = (state: TOrderbookState, sort: "ASC" | "DESC") =>
+const stateToOrderbookResult = (
+  state: TOrderbookState,
+  { sort, numLevels }: { sort: "ASC" | "DESC"; numLevels: number }
+) =>
   Object.keys(state)
     .sort((a, b) => (parseFloat(a) - parseFloat(b)) * (sort === "ASC" ? -1 : 1))
+    .slice(0, numLevels)
     .reduce(
       (acc, k) => {
         acc.offers.push({
@@ -63,6 +49,7 @@ const stateToOrderbookResult = (state: TOrderbookState, sort: "ASC" | "DESC") =>
     );
 
 export const useOrderbook = (): IOrderbook => {
+  const numLevels = React.useRef(0);
   const [asks, setAsks] = React.useState<TOrderbookState>({});
   const [bids, setBids] = React.useState<TOrderbookState>({});
 
@@ -83,6 +70,7 @@ export const useOrderbook = (): IOrderbook => {
     }
     if ("feed" in data) {
       if ("numLevels" in data) {
+        numLevels.current = data["numLevels"];
         setAsks(entriesToState(data.asks));
         setBids(entriesToState(data.bids));
         return;
@@ -97,11 +85,19 @@ export const useOrderbook = (): IOrderbook => {
   }, [data]);
 
   const orderbookAsks = React.useMemo(
-    () => stateToOrderbookResult(asks, "DESC"),
+    () =>
+      stateToOrderbookResult(asks, {
+        sort: "DESC",
+        numLevels: numLevels.current,
+      }),
     [asks]
   );
   const orderbookBids = React.useMemo(
-    () => stateToOrderbookResult(bids, "ASC"),
+    () =>
+      stateToOrderbookResult(bids, {
+        sort: "ASC",
+        numLevels: numLevels.current,
+      }),
     [bids]
   );
 

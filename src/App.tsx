@@ -1,43 +1,22 @@
 import "./App.css";
+import { Header } from "./components/header";
+import { Offers } from "./components/offers";
+import { OfferType } from "./constants";
 import { useOrderbook } from "./useOrderbook";
 
 function App() {
   const { spread, spreadPercentage, asks, bids } = useOrderbook();
+  const maxTotal = Math.max(asks.total, bids.total);
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-      }}
-    >
-      <p>
-        Spread: {spread.toFixed(1)} ({spreadPercentage}%)
-      </p>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flex: 1,
-        }}
-      >
-        <ul style={{ color: "green" }}>
-          {asks.offers.slice(0, 25).map(({ total, size, price }) => (
-            <li key={price.toString()}>{`${total}(${Math.round(
-              (total / asks.total) * 100
-            )}%):${size}:${price}`}</li>
-          ))}
-        </ul>
-        <ul style={{ color: "red" }}>
-          {bids.offers.slice(0, 25).map(({ total, size, price }) => (
-            <li key={price.toString()}>{`${price}:${size}:${total}(${Math.floor(
-              (total / bids.total) * 100
-            )}%)`}</li>
-          ))}
-        </ul>
+    <div id="app">
+      <Header spread={spread} spreadPercentage={spreadPercentage} />
+      <div className="offers">
+        <Offers type={OfferType.Ask} offers={asks.offers} total={maxTotal} />
+        <Offers type={OfferType.Bid} offers={bids.offers} total={maxTotal} />
+      </div>
+      <div className="footer">
+        <button className="toggle">Toggle Feed</button>
       </div>
     </div>
   );
