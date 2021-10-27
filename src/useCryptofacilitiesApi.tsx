@@ -1,22 +1,5 @@
 import * as React from "react";
 
-export type TEntry = [number, number];
-
-interface ISnapshot {
-  numLevels: number;
-  feed: string;
-  product_id: string;
-  bids: TEntry[];
-  asks: TEntry[];
-}
-
-interface IUpdate {
-  feed: string;
-  product_id: string;
-  bids: TEntry[];
-  asks: TEntry[];
-}
-
 const SUBSCRIBE_MESSAGE = {
   event: "subscribe",
   feed: "book_ui_1",
