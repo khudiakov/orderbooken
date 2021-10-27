@@ -15,3 +15,11 @@ export const numberFormat = new Intl.NumberFormat("en-US");
 export const priceFormat = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 2,
 });
+
+export const getSpreadText = ({
+  spread,
+  spreadPercentage,
+}: {
+  spread: number;
+  spreadPercentage: number;
+}) => `Spread: ${spread.toFixed(1)} (${spreadPercentage}%)`;

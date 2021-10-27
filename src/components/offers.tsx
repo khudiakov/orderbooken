@@ -1,20 +1,7 @@
 import * as React from "react";
 import { OfferType } from "../constants";
 import { getOfferColor, numberFormat, priceFormat } from "../utils";
-
-const OffersHeaderLabel = ({ text }: { text: string }) => (
-  <span className="flex1 label">{text}</span>
-);
-
-const OffersHeaderComponent = ({ revert }: { revert?: boolean }) => (
-  <div className={`offers-header ${revert ? "flex-row-reverse" : "flex-row"}`}>
-    <OffersHeaderLabel text="Total" />
-    <OffersHeaderLabel text="Size" />
-    <OffersHeaderLabel text="Price" />
-  </div>
-);
-
-const OffersHeaderMemo = React.memo(OffersHeaderComponent);
+import { OffersHeader } from "./offers-header";
 
 const NumberComponent = ({
   value,
@@ -61,10 +48,8 @@ const OfferComponent = ({
     ` ${totalPercentage}%, transparent ${totalPercentage}% )`;
 
   return (
-    <div
-      className={`offer ${revert ? "flex-row-reverse" : "flex-row"}`}
-      style={{ background }}
-    >
+    <div className={`offer ${revert ? "flex-row-reverse" : "flex-row"}`}>
+      <div className="offer-background" style={{ background }} />
       <NumberMemo value={total} />
       <NumberMemo value={size} />
       <NumberMemo value={price} price={type} />
@@ -84,8 +69,8 @@ export const Offers = ({
   total: number;
 }) => {
   return (
-    <div className="flex1">
-      <OffersHeaderMemo />
+    <div className={`offers-${type === OfferType.Ask ? "ask" : "bid"} flex1`}>
+      <OffersHeader revert={type === OfferType.Bid} />
       {offers.map(({ total, size, price }) => (
         <OfferMemo
           key={price.toString()}

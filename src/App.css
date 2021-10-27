@@ -59,7 +59,7 @@ html {
   font-family: monospace;
 }
 
-.offers {
+.content {
   flex: 1;
   display: flex;
   flex-direction: row;
@@ -75,6 +75,7 @@ html {
 }
 
 .toggle {
+  cursor: pointer;
   padding: 0.3rem 0.6rem;
   background-color: var(--color-primary);
   color: white;
@@ -83,6 +84,14 @@ html {
 }
 .toggle:active {
   background-color: var(--color-primary-active);
+}
+
+.offer-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 #app {
@@ -95,4 +104,39 @@ html {
   background-color: var(--color-background);
   color: var(--color-text);
   overflow: hidden;
+}
+
+@media only screen and (orientation: landscape) {
+  .portrait {
+    display: none;
+  }
+}
+
+@media only screen and (orientation: portrait) {
+  .content {
+    flex-direction: column-reverse;
+    text-align: center;
+  }
+  .header > .label {
+    display: none;
+  }
+
+  .content > .label {
+    margin: 0.3rem 0;
+  }
+
+  .offers-bid > .offers-header,
+  .offers-ask > .offers-header {
+    display: none;
+  }
+  .offers-bid {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .offers-ask > .offer {
+    flex-direction: row-reverse;
+  }
+  .offers-ask > .offer > .offer-background {
+    transform: rotateZ(180deg);
+  }
 }
