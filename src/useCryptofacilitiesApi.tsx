@@ -1,41 +1,52 @@
 import * as React from "react";
 
-const SUBSCRIBE_MESSAGE = {
+const getSubscribeMessage = (productId: TProductId) => ({
   event: "subscribe",
   feed: "book_ui_1",
-  product_ids: ["PI_XBTUSD"],
-};
+  product_ids: [productId],
+});
 
-const UNSUBSCRIBE_MESSAGE = {
+const getUnsubscribeMessage = (productId: TProductId) => ({
   event: "unsubscribe",
   feed: "book_ui_1",
-  product_ids: ["PI_XBTUSD"],
-};
+  product_ids: [productId],
+});
 
 const WEB_SOCKET_URL = "wss://www.cryptofacilities.com/ws/v1";
 
-export const useCryptofacilitiesApi = () => {
-  const [loading, setLoading] = React.useState(true);
+export const useCryptofacilitiesApi = ({
+  productId,
+}: {
+  productId: TProductId;
+}) => {
+  const [opening, setOpening] = React.useState(true);
   const [data, setData] = React.useState<undefined | ISnapshot | IUpdate>();
   const [error, setError] = React.useState<undefined | Error>();
   const webSocket = React.useMemo(() => new WebSocket(WEB_SOCKET_URL), []);
 
+  React.useEffect(
+    () => () => {
+      if (webSocket.readyState !== webSocket.CLOSED) {
+        webSocket.close();
+      }
+    },
+    [webSocket]
+  );
+
   React.useEffect(() => {
-    setLoading(true);
     if (webSocket == null) {
-      setLoading(false);
+      setOpening(false);
       return;
     }
 
     webSocket.onopen = () => {
-      webSocket.send(JSON.stringify(SUBSCRIBE_MESSAGE));
-      setLoading(false);
+      setOpening(false);
     };
     webSocket.onerror = (event) => {
       const message = `WebSocket error observed: ${event}`;
       console.error(message);
       setError(new Error(message));
-      setLoading(false);
+      setOpening(false);
     };
     webSocket.onmessage = (event) => {
       try {
@@ -45,14 +56,17 @@ export const useCryptofacilitiesApi = () => {
         console.warn(e);
       }
     };
-    return () => {
-      if (webSocket.readyState === webSocket.OPEN) {
-        webSocket.send(JSON.stringify(UNSUBSCRIBE_MESSAGE));
-      }
-      if (webSocket.readyState !== webSocket.CLOSED) {
-        webSocket.close();
-      }
-    };
-  }, [webSocket, setData]);
-  return { error, loading, data };
+  }, [webSocket, setData, productId]);
+
+  React.useEffect(() => {
+    if (opening) {
+      return;
+    }
+
+    setData(undefined);
+    webSocket.send(JSON.stringify(getSubscribeMessage(productId)));
+    return () =>
+      webSocket.send(JSON.stringify(getUnsubscribeMessage(productId)));
+  }, [opening, webSocket, productId]);
+  return { error, data };
 };

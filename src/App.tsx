@@ -1,3 +1,4 @@
+import * as React from "react";
 import "./App.css";
 import { Header } from "./components/header";
 import { Offers } from "./components/offers";
@@ -7,8 +8,17 @@ import { useOrderbook } from "./useOrderbook";
 import { getSpreadText } from "./utils";
 
 function App() {
-  const { spread, spreadPercentage, asks, bids } = useOrderbook();
+  const [productId, setProductId] = React.useState<TProductId>("PI_XBTUSD");
+  const { ready, spread, spreadPercentage, asks, bids } = useOrderbook({
+    productId,
+  });
   const maxTotal = Math.max(asks.total, bids.total);
+
+  const onToggle = React.useCallback(() => {
+    setProductId((productId) =>
+      productId === "PI_ETHUSD" ? "PI_XBTUSD" : "PI_ETHUSD"
+    );
+  }, []);
 
   return (
     <div id="app">
@@ -22,7 +32,9 @@ function App() {
         <Offers type={OfferType.Bid} offers={bids.offers} total={maxTotal} />
       </div>
       <div className="footer">
-        <button className="toggle">Toggle Feed</button>
+        <button className="toggle" disabled={!ready} onClick={onToggle}>
+          Toggle Feed
+        </button>
       </div>
     </div>
   );

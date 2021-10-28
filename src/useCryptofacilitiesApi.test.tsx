@@ -21,7 +21,9 @@ describe("useCryptofacilitiesApi", () => {
   });
 
   it("subscribe on mount and unsubscribe on unmount", () => {
-    const { unmount } = renderHook(() => useCryptofacilitiesApi());
+    const { unmount } = renderHook(() =>
+      useCryptofacilitiesApi({ productId: "PI_XBTUSD" })
+    );
     expect(webSocketSpy).toBeCalledTimes(1);
     expect(mockWebSocket.close).toBeCalledTimes(0);
     unmount();
@@ -29,7 +31,9 @@ describe("useCryptofacilitiesApi", () => {
   });
 
   it("send open and close messages", () => {
-    const { unmount } = renderHook(() => useCryptofacilitiesApi());
+    const { unmount } = renderHook(() =>
+      useCryptofacilitiesApi({ productId: "PI_XBTUSD" })
+    );
     act(() => mockWebSocket.onopen());
     mockWebSocket.readyState = actualWebSocket.OPEN;
     expect(mockWebSocket.send).toBeCalledTimes(1);
@@ -38,22 +42,36 @@ describe("useCryptofacilitiesApi", () => {
   });
 
   it("ignore bad message", () => {
-    const { result } = renderHook(() => useCryptofacilitiesApi());
+    const { result } = renderHook(() =>
+      useCryptofacilitiesApi({ productId: "PI_XBTUSD" })
+    );
     act(() => mockWebSocket.onopen());
     mockWebSocket.readyState = actualWebSocket.OPEN;
     act(() => mockWebSocket.onmessage({ data: "" }));
-    expect(result.current.loading).toEqual(false);
     expect(result.current.data).toBeUndefined();
     expect(result.current.error).toBeUndefined();
   });
 
   it("return error on connection error", () => {
-    const { result } = renderHook(() => useCryptofacilitiesApi());
-    expect(result.current.loading).toEqual(true);
+    const { result } = renderHook(() =>
+      useCryptofacilitiesApi({ productId: "PI_XBTUSD" })
+    );
     act(() => mockWebSocket.onerror(new Error("Connection Issue!")));
     mockWebSocket.readyState = actualWebSocket.CLOSED;
-    expect(result.current.loading).toEqual(false);
     expect(result.current.data).toBeUndefined();
     expect(result.current.error).toBeDefined();
+  });
+
+  it("resubscribe on product id changes", () => {
+    const { rerender } = renderHook(
+      ({ productId }: { productId: TProductId }) =>
+        useCryptofacilitiesApi({ productId }),
+      { initialProps: { productId: "PI_XBTUSD" } }
+    );
+    act(() => mockWebSocket.onopen());
+    mockWebSocket.readyState = actualWebSocket.OPEN;
+    expect(mockWebSocket.send).toBeCalledTimes(1);
+    rerender({ productId: "PI_ETHUSD" });
+    expect(mockWebSocket.send).toBeCalledTimes(3);
   });
 });
