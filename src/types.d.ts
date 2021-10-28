@@ -29,8 +29,11 @@ interface IOrderbookOffers {
 }
 
 interface IOrderbook {
+  ready: boolean;
   spread: number;
   spreadPercentage: number;
   asks: IOrderbookOffers;
   bids: IOrderbookOffers;
 }
+
+type TProductId = "PI_XBTUSD" | "PI_ETHUSD";

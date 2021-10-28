@@ -16,8 +16,11 @@ describe("useOrderbook", () => {
   });
 
   it("return databook", () => {
-    const { result } = renderHook(() => useOrderbook());
+    const { result } = renderHook(() =>
+      useOrderbook({ productId: "PI_XBTUSD" })
+    );
     expect(result.current).toEqual({
+      ready: false,
       spread: 0,
       spreadPercentage: 0,
       asks: { offers: [], total: 0 },
@@ -31,6 +34,7 @@ describe("useOrderbook", () => {
       })
     );
     expect(result.current).toEqual({
+      ready: true,
       spread: 15,
       spreadPercentage: 0.02,
       asks: {
@@ -54,6 +58,7 @@ describe("useOrderbook", () => {
       })
     );
     expect(result.current).toEqual({
+      ready: true,
       spread: 16,
       spreadPercentage: 0.03,
       asks: {

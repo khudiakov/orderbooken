@@ -3,6 +3,7 @@ import * as React from "react";
 import { useCryptofacilitiesApi } from "./useCryptofacilitiesApi";
 
 const EMPTY_RESULT: IOrderbook = {
+  ready: true,
   spread: 0,
   spreadPercentage: 0,
   asks: { total: 0, offers: [] },
@@ -48,12 +49,20 @@ const stateToOrderbookResult = (
       { total: 0, offers: [] } as IOrderbookOffers
     );
 
-export const useOrderbook = (): IOrderbook => {
+export const useOrderbook = ({
+  productId,
+}: {
+  productId: TProductId;
+}): IOrderbook => {
   const numLevels = React.useRef(0);
   const [asks, setAsks] = React.useState<TOrderbookState>({});
   const [bids, setBids] = React.useState<TOrderbookState>({});
 
-  const { data, error, loading } = useCryptofacilitiesApi();
+  const { data, error } = useCryptofacilitiesApi({ productId });
+  const [ready, setReady] = React.useState(false);
+  React.useEffect(() => {
+    setReady(false);
+  }, [productId]);
 
   React.useEffect(() => {
     if (data == null) {
@@ -71,6 +80,7 @@ export const useOrderbook = (): IOrderbook => {
     if ("feed" in data) {
       if ("numLevels" in data) {
         numLevels.current = data["numLevels"];
+        setReady(true);
         setAsks(entriesToState(data.asks));
         setBids(entriesToState(data.bids));
         return;
@@ -101,7 +111,7 @@ export const useOrderbook = (): IOrderbook => {
     [bids]
   );
 
-  if (loading || error) {
+  if (error) {
     return EMPTY_RESULT;
   }
 
@@ -115,6 +125,7 @@ export const useOrderbook = (): IOrderbook => {
   }
 
   return {
+    ready,
     spread,
     spreadPercentage,
     asks: orderbookAsks,

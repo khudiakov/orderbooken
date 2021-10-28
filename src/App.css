@@ -2,8 +2,10 @@ html {
   --color-background: rgb(13, 8, 30);
   --color-primary: rgb(74, 26, 218);
   --color-primary-active: rgb(51, 17, 151);
+  --color-primary-disabled: rgb(209, 209, 211);
   --color-text: rgb(255, 255, 255);
   --color-text-label: rgb(50, 57, 71);
+  --color-text-disabled: rgb(112, 112, 114);
   --color-ask: rgba(0, 106, 66, 1);
   --background-color-ask: rgba(0, 106, 66, 0.2);
   --color-bid: rgba(190, 5, 37, 1);
@@ -84,6 +86,11 @@ html {
 }
 .toggle:active {
   background-color: var(--color-primary-active);
+}
+.toggle:disabled {
+  cursor: default;
+  color: var(--color-text-disabled);
+  background-color: var(--color-primary-disabled);
 }
 
 .offer-background {
