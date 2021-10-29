@@ -1,18 +1,11 @@
 import * as React from "react";
 import "./App.css";
-import { Header } from "./components/header";
-import { Offers } from "./components/offers";
-import { OffersHeader } from "./components/offers-header";
-import { OfferType } from "./constants";
-import { useOrderbook } from "./useOrderbook";
-import { getSpreadText } from "./utils";
+import { Orderbook } from "./components/orderbook";
+import { useFocusHandler } from "./useFocusHandler";
 
 function App() {
+  const { suspended, onContinue } = useFocusHandler();
   const [productId, setProductId] = React.useState<TProductId>("PI_XBTUSD");
-  const { ready, spread, spreadPercentage, asks, bids } = useOrderbook({
-    productId,
-  });
-  const maxTotal = Math.max(asks.total, bids.total);
 
   const onToggle = React.useCallback(() => {
     setProductId((productId) =>
@@ -22,20 +15,13 @@ function App() {
 
   return (
     <div id="app">
-      <Header spread={spread} spreadPercentage={spreadPercentage} />
-      <OffersHeader className="portrait" revert />
-      <div className="content">
-        <Offers type={OfferType.Ask} offers={asks.offers} total={maxTotal} />
-        <span className="label portrait">
-          {getSpreadText({ spread, spreadPercentage })}
-        </span>
-        <Offers type={OfferType.Bid} offers={bids.offers} total={maxTotal} />
-      </div>
-      <div className="footer">
-        <button className="toggle" disabled={!ready} onClick={onToggle}>
-          Toggle Feed
+      {suspended ? (
+        <button className="button" onClick={onContinue}>
+          I'm back!
         </button>
-      </div>
+      ) : (
+        <Orderbook productId={productId} onToggle={onToggle} />
+      )}
     </div>
   );
 }

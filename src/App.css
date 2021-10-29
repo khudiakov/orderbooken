@@ -76,7 +76,7 @@ html {
   padding: 1rem 0;
 }
 
-.toggle {
+.button {
   cursor: pointer;
   padding: 0.3rem 0.6rem;
   background-color: var(--color-primary);
@@ -84,10 +84,10 @@ html {
   border: none;
   border-radius: 0.2rem;
 }
-.toggle:active {
+.button:active {
   background-color: var(--color-primary-active);
 }
-.toggle:disabled {
+.button:disabled {
   cursor: default;
   color: var(--color-text-disabled);
   background-color: var(--color-primary-disabled);
@@ -108,6 +108,7 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   background-color: var(--color-background);
   color: var(--color-text);
   overflow: hidden;
