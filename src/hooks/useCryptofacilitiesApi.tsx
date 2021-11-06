@@ -29,7 +29,7 @@ export const useCryptofacilitiesApi = ({
   React.useEffect(
     () => () => {
       if (
-        [webSocket.CLOSING, webSocket.CLOSED].includes(webSocket.readyState)
+        ![webSocket.CLOSING, webSocket.CLOSED].includes(webSocket.readyState)
       ) {
         webSocket.close();
       }

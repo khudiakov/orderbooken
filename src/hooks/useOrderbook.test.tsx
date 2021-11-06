@@ -16,6 +16,7 @@ describe("useOrderbook", () => {
   });
 
   it("return databook", () => {
+    jest.useFakeTimers();
     const { result } = renderHook(() =>
       useOrderbook({ productId: "PI_XBTUSD" })
     );
@@ -28,11 +29,12 @@ describe("useOrderbook", () => {
     });
     act(() => mockWebSocket.onopen());
     mockWebSocket.readyState = actualWebSocket.OPEN;
-    act(() =>
-      mockWebSocket.onmessage({
-        data: '{"numLevels":25,"feed":"book_ui_1_snapshot","bids":[[60693.5,500],[60693,2213]],"asks":[[60708.5,500],[60716,6321]],"product_id":"PI_XBTUSD"}',
-      })
-    );
+    mockWebSocket.onmessage({
+      data: '{"numLevels":25,"feed":"book_ui_1_snapshot","bids":[[60693.5,500],[60693,2213]],"asks":[[60708.5,500],[60716,6321]],"product_id":"PI_XBTUSD"}',
+    });
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
     expect(result.current).toEqual({
       ready: true,
       spread: 15,
@@ -57,6 +59,9 @@ describe("useOrderbook", () => {
         data: '{"feed":"book_ui_1","product_id":"PI_XBTUSD","bids":[[60693.5,0],[60693,213]],"asks":[[60708.5,0], [60709,100],[60716,321]]}',
       })
     );
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
     expect(result.current).toEqual({
       ready: true,
       spread: 16,
