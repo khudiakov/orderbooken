@@ -7,9 +7,10 @@ html {
   --color-text-label: rgb(50, 57, 71);
   --color-text-disabled: rgb(112, 112, 114);
   --color-ask: rgba(0, 106, 66, 1);
-  --background-color-ask: rgba(0, 106, 66, 0.2);
+  --background-color-ask: rgba(14, 21, 28, 1);
   --color-bid: rgba(190, 5, 37, 1);
-  --background-color-bid: rgba(190, 5, 37, 0.2);
+  --background-color-bid: rgba(37, 9, 25, 1);
+  --offer-height: 22px;
 }
 
 .flex1 {
@@ -38,6 +39,19 @@ html {
   text-align: center;
 }
 
+.offers {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.offers-asks,
+.offers-bids {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
 .offers-header {
   padding: 0.2rem 3rem;
   border-width: 0.05rem 0;
@@ -51,6 +65,8 @@ html {
 }
 
 .offer {
+  max-height: calc(var(--offer-height) - 0.4rem);
+  min-height: calc(var(--offer-height) - 0.4rem);
   position: relative;
   padding: 0.2rem 3rem;
   width: calc(100% - 6rem);
@@ -59,6 +75,7 @@ html {
 .number {
   text-align: end;
   font-family: monospace;
+  z-index: 1;
 }
 
 .content {
@@ -133,18 +150,18 @@ html {
     margin: 0.3rem 0;
   }
 
-  .offers-bid > .offers-header,
-  .offers-ask > .offers-header {
+  .offers > .offers-header,
+  .offers > .offers-header {
     display: none;
   }
-  .offers-bid {
+  .offers-bids {
     display: flex;
     flex-direction: column-reverse;
   }
-  .offers-ask > .offer {
+  .offers-asks > .offer {
     flex-direction: row-reverse;
   }
-  .offers-ask > .offer > .offer-background {
+  .offers-asks > .offer > .offer-background {
     transform: rotateZ(180deg);
   }
 }
