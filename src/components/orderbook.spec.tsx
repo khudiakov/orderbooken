@@ -91,8 +91,10 @@ describe("Orderbook Component", () => {
         expect(onToggle).to.be.called;
       });
     cy.viewport(720, 480);
+    cy.wait(1000);
     cy.compareSnapshot("landscape-orderbook");
     cy.viewport(480, 720);
+    cy.wait(1000);
     cy.compareSnapshot("portrait-orderbook");
   });
 });
