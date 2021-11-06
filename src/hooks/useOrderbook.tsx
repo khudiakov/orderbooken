@@ -1,6 +1,7 @@
 import * as React from "react";
-
+import { useHardwareConcurrency, useMemoryStatus } from "react-adaptive-hooks";
 import { useCryptofacilitiesApi } from "./useCryptofacilitiesApi";
+import { useIsMounted } from "./useIsMounted";
 
 const EMPTY_RESULT: IOrderbook = {
   ready: true,
@@ -49,14 +50,68 @@ const stateToOrderbookResult = (
       { total: 0, offers: [] } as IOrderbookOffers
     );
 
+enum PerformanceBucket {
+  Slow = "Slow",
+  Medium = "Medium",
+  Fast = "Fast",
+}
+const BUCKET_THROTTLE = {
+  [PerformanceBucket.Slow]: 200,
+  [PerformanceBucket.Medium]: 50,
+  [PerformanceBucket.Fast]: 20,
+};
+const DEFAULT_PROCESSORS = 4;
+const DEFAULT_MEMORY = 16;
+
+const usePerformanceBucket = () => {
+  const { numberOfLogicalProcessors = DEFAULT_PROCESSORS } =
+    useHardwareConcurrency();
+  const { deviceMemory = DEFAULT_MEMORY } = useMemoryStatus();
+
+  return React.useMemo(() => {
+    const perfHeuristic = numberOfLogicalProcessors + deviceMemory / 2;
+    if (perfHeuristic >= 10) {
+      return PerformanceBucket.Fast;
+    }
+    if (perfHeuristic <= 3) {
+      return PerformanceBucket.Slow;
+    }
+    return PerformanceBucket.Medium;
+  }, [numberOfLogicalProcessors, deviceMemory]);
+};
+
+function useThrottledState<T>(initialState: T): [T, (fn: (s: T) => T) => void] {
+  const isMounted = useIsMounted();
+  const perfBucket = usePerformanceBucket();
+
+  const intermediateState = React.useRef(initialState);
+  const [state, setState] = React.useState(initialState);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (!isMounted.current) {
+        return;
+      }
+      setState(intermediateState.current);
+    }, BUCKET_THROTTLE[perfBucket]);
+    return () => clearInterval(interval);
+  }, [perfBucket, isMounted]);
+
+  const setStateThrottled = React.useCallback((fn: (prevState: T) => T) => {
+    intermediateState.current = fn(intermediateState.current);
+  }, []);
+
+  return [state, setStateThrottled];
+}
+
 export const useOrderbook = ({
   productId,
 }: {
   productId: TProductId;
 }): IOrderbook => {
   const numLevels = React.useRef(0);
-  const [asks, setAsks] = React.useState<TOrderbookState>({});
-  const [bids, setBids] = React.useState<TOrderbookState>({});
+  const [asks, setAsks] = useThrottledState<TOrderbookState>({});
+  const [bids, setBids] = useThrottledState<TOrderbookState>({});
 
   const { data, error } = useCryptofacilitiesApi({ productId });
   const [ready, setReady] = React.useState(false);
@@ -81,8 +136,8 @@ export const useOrderbook = ({
       if ("numLevels" in data) {
         numLevels.current = data["numLevels"];
         setReady(true);
-        setAsks(entriesToState(data.asks));
-        setBids(entriesToState(data.bids));
+        setAsks(() => entriesToState(data.asks));
+        setBids(() => entriesToState(data.bids));
         return;
       }
       if (data.asks.length > 0) {
@@ -92,7 +147,7 @@ export const useOrderbook = ({
         setBids((bids) => applyStateUpdate(data.bids, bids));
       }
     }
-  }, [data]);
+  }, [data, setAsks, setBids]);
 
   const orderbookAsks = React.useMemo(
     () =>

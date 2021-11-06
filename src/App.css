@@ -7,9 +7,11 @@ html {
   --color-text-label: rgb(50, 57, 71);
   --color-text-disabled: rgb(112, 112, 114);
   --color-ask: rgba(0, 106, 66, 1);
-  --background-color-ask: rgba(0, 106, 66, 0.2);
+  --background-color-ask: rgba(14, 21, 28, 1);
   --color-bid: rgba(190, 5, 37, 1);
-  --background-color-bid: rgba(190, 5, 37, 0.2);
+  --background-color-bid: rgba(37, 9, 25, 1);
+  --offer-min-height: 22px;
+  --color-border: rgb(23, 30, 40);
 }
 
 .flex1 {
@@ -29,7 +31,7 @@ html {
 .header {
   display: flex;
   align-items: center;
-  border: 0.05rem solid rgb(23, 30, 40);
+  border: 0.05rem solid var(--color-border);
   width: calc(100% - 0.1rem - 1rem);
   padding: 0.5rem;
   flex-shrink: 0;
@@ -38,11 +40,24 @@ html {
   text-align: center;
 }
 
+.offers {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.offers-asks,
+.offers-bids {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
 .offers-header {
   padding: 0.2rem 3rem;
   border-width: 0.05rem 0;
   border-style: solid;
-  border-color: rgb(23, 30, 40);
+  border-color: var(--color-border);
   width: calc(100% - 0.1rem - 6rem);
 }
 .offers-header > .label {
@@ -51,6 +66,8 @@ html {
 }
 
 .offer {
+  flex: 1 0;
+  min-height: calc(var(--offer-min-height) - 0.4rem);
   position: relative;
   padding: 0.2rem 3rem;
   width: calc(100% - 6rem);
@@ -59,6 +76,7 @@ html {
 .number {
   text-align: end;
   font-family: monospace;
+  z-index: 1;
 }
 
 .content {
@@ -133,18 +151,18 @@ html {
     margin: 0.3rem 0;
   }
 
-  .offers-bid > .offers-header,
-  .offers-ask > .offers-header {
+  .offers > .offers-header,
+  .offers > .offers-header {
     display: none;
   }
-  .offers-bid {
+  .offers-bids {
     display: flex;
     flex-direction: column-reverse;
   }
-  .offers-ask > .offer {
+  .offers-asks > .offer {
     flex-direction: row-reverse;
   }
-  .offers-ask > .offer > .offer-background {
+  .offers-asks > .offer > .offer-background {
     transform: rotateZ(180deg);
   }
 }

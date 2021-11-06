@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useIsMounted } from "./useIsMounted";
 
 const getSubscribeMessage = (productId: TProductId) => ({
   event: "subscribe",
@@ -23,10 +24,13 @@ export const useCryptofacilitiesApi = ({
   const [data, setData] = React.useState<undefined | ISnapshot | IUpdate>();
   const [error, setError] = React.useState<undefined | Error>();
   const webSocket = React.useMemo(() => new WebSocket(WEB_SOCKET_URL), []);
+  const isMounted = useIsMounted();
 
   React.useEffect(
     () => () => {
-      if (webSocket.readyState !== webSocket.CLOSED) {
+      if (
+        [webSocket.CLOSING, webSocket.CLOSED].includes(webSocket.readyState)
+      ) {
         webSocket.close();
       }
     },
@@ -40,15 +44,24 @@ export const useCryptofacilitiesApi = ({
     }
 
     webSocket.onopen = () => {
+      if (!isMounted.current) {
+        return;
+      }
       setOpening(false);
     };
     webSocket.onerror = (event) => {
+      if (!isMounted.current) {
+        return;
+      }
       const message = `WebSocket error observed: ${event}`;
       console.error(message);
       setError(new Error(message));
       setOpening(false);
     };
     webSocket.onmessage = (event) => {
+      if (!isMounted.current) {
+        return;
+      }
       try {
         const data = JSON.parse(event.data);
         setData(data);
@@ -56,7 +69,7 @@ export const useCryptofacilitiesApi = ({
         console.warn(e);
       }
     };
-  }, [webSocket, setData, productId]);
+  }, [isMounted, webSocket, setData, productId]);
 
   React.useEffect(() => {
     if (opening) {
