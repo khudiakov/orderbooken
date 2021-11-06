@@ -75,7 +75,7 @@ export const Offers = ({
   const offerHeight = React.useMemo(() => {
     const height = window
       .getComputedStyle(document.documentElement)
-      .getPropertyValue("--offer-height");
+      .getPropertyValue("--offer-min-height");
     const heightMatch = height.match(/(\d+)px/);
     if (heightMatch == null) {
       console.error(`Can't parse height of offer element`);
