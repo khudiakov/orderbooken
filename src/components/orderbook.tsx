@@ -1,6 +1,6 @@
 import * as React from "react";
 import { OfferType } from "../constants";
-import { useOrderbook } from "../useOrderbook";
+import { useOrderbook } from "../hooks/useOrderbook";
 import { getSpreadText } from "../utils";
 import { Header } from "./header";
 import { Offers } from "./offers";

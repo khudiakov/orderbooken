@@ -1,7 +1,7 @@
 import * as React from "react";
 import "./App.css";
 import { Orderbook } from "./components/orderbook";
-import { useFocusHandler } from "./useFocusHandler";
+import { useFocusHandler } from "./hooks/useFocusHandler";
 
 function App() {
   const { suspended, onContinue } = useFocusHandler();
