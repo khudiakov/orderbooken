@@ -74,4 +74,18 @@ describe("useCryptofacilitiesApi", () => {
     rerender({ productId: "PI_ETHUSD" });
     expect(mockWebSocket.send).toBeCalledTimes(3);
   });
+
+  it("don't send unsubscribe message if websocket's already closed", () => {
+    const { unmount } = renderHook(() =>
+      useCryptofacilitiesApi({ productId: "PI_XBTUSD" })
+    );
+    act(() => mockWebSocket.onopen());
+    expect(mockWebSocket.send).toBeCalledTimes(1);
+    mockWebSocket.close.mockImplementationOnce(() => {
+      mockWebSocket.readyState = actualWebSocket.CLOSED;
+    });
+    unmount();
+    expect(mockWebSocket.close).toBeCalledTimes(1);
+    expect(mockWebSocket.send).toBeCalledTimes(1);
+  });
 });

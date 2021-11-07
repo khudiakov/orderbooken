@@ -78,8 +78,11 @@ export const useCryptofacilitiesApi = ({
 
     setData(undefined);
     webSocket.send(JSON.stringify(getSubscribeMessage(productId)));
-    return () =>
-      webSocket.send(JSON.stringify(getUnsubscribeMessage(productId)));
+    return () => {
+      if (webSocket.readyState === webSocket.OPEN) {
+        webSocket.send(JSON.stringify(getUnsubscribeMessage(productId)));
+      }
+    };
   }, [opening, webSocket, productId]);
   return { error, data };
 };
