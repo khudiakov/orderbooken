@@ -29,9 +29,11 @@ describe("useOrderbook", () => {
     });
     act(() => mockWebSocket.onopen());
     mockWebSocket.readyState = actualWebSocket.OPEN;
-    mockWebSocket.onmessage({
-      data: '{"numLevels":25,"feed":"book_ui_1_snapshot","bids":[[60693.5,500],[60693,2213]],"asks":[[60708.5,500],[60716,6321]],"product_id":"PI_XBTUSD"}',
-    });
+    act(() =>
+      mockWebSocket.onmessage({
+        data: '{"numLevels":25,"feed":"book_ui_1_snapshot","bids":[[60693.5,500],[60693,2213]],"asks":[[60708.5,500],[60716,6321]],"product_id":"PI_XBTUSD"}',
+      })
+    );
     act(() => {
       jest.runOnlyPendingTimers();
     });
