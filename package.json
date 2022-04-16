@@ -13,7 +13,7 @@
     "@types/react-adaptive-hooks": "^0.0.1",
     "@types/react-dom": "^17.0.10",
     "react": "^17.0.2",
-    "react-adaptive-hooks": "^0.0.8",
+    "react-adaptive-hooks": "github:GoogleChromeLabs/react-adaptive-hooks",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
     "typescript": "^4.4.4",
@@ -26,7 +26,8 @@
     "cypress": "cypress run-ct",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "chromatic": "chromatic --exit-zero-on-changes"
   },
   "eslintConfig": {
     "extends": [
@@ -67,6 +68,7 @@
     "@storybook/preset-create-react-app": "^3.2.0",
     "@storybook/react": "^6.4.22",
     "@storybook/testing-library": "^0.0.9",
+    "chromatic": "^6.5.4",
     "cypress": "^8.7.0",
     "cypress-image-diff-js": "^1.15.4"
   },
