@@ -12,3 +12,5 @@ jobs:
         run: npm install
       - name: Percy Test
         run: npx @percy/cli exec -- npm run cypress  # or any directory such as public/
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
