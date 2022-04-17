@@ -26,6 +26,6 @@ describe("Orderbook Component", () => {
       .then(() => {
         expect(onToggle).to.be.called;
       });
-    cy.percySnapshot("orderbook");
+    cy.percySnapshot("orderbook", { discovery: { networkIdleTimeout: 1000 } });
   });
 });
