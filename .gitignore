@@ -28,3 +28,6 @@ cypress/videos
 cypress-visual-report
 cypress-visual-screenshots/*
 !cypress-visual-screenshots/baseline
+
+#storybook
+build-storybook.log
