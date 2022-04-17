@@ -8,6 +8,7 @@ import FIXTURE from "./orderbook.fixture.json";
 
 describe("Orderbook Component", () => {
   it("render macbook", () => {
+    cy.clock();
     const onToggle = cy.stub();
     mount(
       <div id="app">
@@ -26,11 +27,7 @@ describe("Orderbook Component", () => {
       .then(() => {
         expect(onToggle).to.be.called;
       });
-    cy.viewport(720, 480);
-    cy.wait(1000);
-    cy.compareSnapshot("landscape-orderbook");
-    cy.viewport(480, 720);
-    cy.wait(1000);
-    cy.compareSnapshot("portrait-orderbook");
+    cy.tick(60 * 1000)
+    cy.percySnapshot("orderbook");
   });
 });
